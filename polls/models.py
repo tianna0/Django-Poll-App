@@ -1,7 +1,8 @@
+import secrets
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-import secrets
+
 
 
 class Poll(models.Model):
@@ -38,8 +39,8 @@ class Poll(models.Model):
             if not self.get_vote_count:
                 d['percentage'] = 0
             else:
-                d['percentage'] = (choice.get_vote_count /
-                                   self.get_vote_count)*100
+                d['percentage'] = (choice.get_vote_count
+                                   / self.get_vote_count)*100
 
             res.append(d)
         return res

@@ -78,8 +78,8 @@ def polls_add(request):
             'form': form,
         }
         return render(request, 'polls/add_poll.html', context)
-    else:
-        return HttpResponse("Sorry but you don't have permission to do that!")
+    
+    return HttpResponse("Sorry but you don't have permission to do that!")
 
 
 @login_required

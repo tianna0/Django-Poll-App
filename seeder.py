@@ -18,7 +18,7 @@ def seed_users(num_entries=10, overwrite=False):
     for _ in range(num_entries):
         first_name = fake.first_name()
         last_name = fake.last_name()
-        u = User.objects.create_user(
+        User.objects.create_user(
             first_name=first_name,
             last_name=last_name,
             email=first_name + "." + last_name + "@fakermail.com",
@@ -114,4 +114,5 @@ def seed_all(num_entries=10, overwrite=False):
     elapsed_time = time.time() - start_time
     minutes = int(elapsed_time // 60)
     seconds = int(elapsed_time % 60)
-    print("Script Execution took: {} minutes {} seconds".format(minutes, seconds))
+    print(f"Script Execution took: {minutes} minutes {seconds} seconds")
+
