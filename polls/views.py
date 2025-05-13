@@ -6,10 +6,26 @@ from django.contrib import messages
 from .models import Poll, Choice, Vote
 from .forms import PollAddForm, EditPollForm, ChoiceAddForm
 from django.http import HttpResponse
+from django.http import HttpResponseForbidden
 
 
 @login_required()
 def polls_list(request):
+    """
+    Display a paginated, searchable, and sortable list of all polls.
+
+    This view handles:
+    - Sorting polls by name, date, or vote count via query parameters (?name, ?date, ?vote)
+    - Filtering polls by a search keyword (?search)
+    - Paginating the result (6 polls per page)
+
+    Args:
+        request (HttpRequest): The incoming HTTP request with optional query parameters.
+
+    Returns:
+        HttpResponse: Rendered HTML page with the filtered and paginated poll list.
+    """
+     
     all_polls = Poll.objects.all()
     search_term = ''
     if 'name' in request.GET:
@@ -59,7 +75,7 @@ def polls_add(request):
     if request.user.has_perm('polls.add_poll'):
         if request.method == 'POST':
             form = PollAddForm(request.POST)
-            if form.is_valid:
+            if form.is_valid():
                 poll = form.save(commit=False)
                 poll.owner = request.user
                 poll.save()
@@ -86,11 +102,11 @@ def polls_add(request):
 def polls_edit(request, poll_id):
     poll = get_object_or_404(Poll, pk=poll_id)
     if request.user != poll.owner:
-        return redirect('home')
+        return HttpResponseForbidden("You are not allowed to edit this poll.")
 
     if request.method == 'POST':
         form = EditPollForm(request.POST, instance=poll)
-        if form.is_valid:
+        if form.is_valid():
             form.save()
             messages.success(request, "Poll Updated successfully.",
                              extra_tags='alert alert-success alert-dismissible fade show')
@@ -121,7 +137,7 @@ def add_choice(request, poll_id):
 
     if request.method == 'POST':
         form = ChoiceAddForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             new_choice = form.save(commit=False)
             new_choice.poll = poll
             new_choice.save()
@@ -145,7 +161,7 @@ def choice_edit(request, choice_id):
 
     if request.method == 'POST':
         form = ChoiceAddForm(request.POST, instance=choice)
-        if form.is_valid:
+        if form.is_valid():
             new_choice = form.save(commit=False)
             new_choice.poll = poll
             new_choice.save()
